@@ -2,7 +2,11 @@ const express = require("express");
 const morgan = require("morgan");
 const cookiparser = require("cookie-parser");
 const db = require("./config/database");
+const ratelimiting = require("./middleware/rateLimiter");
+
+//import routes
 const authRouter = require("./routes/auth.routes");
+const dataRouter = require("./routes/data.routes");
 
 const app = express();
 
@@ -11,7 +15,12 @@ app.use(express.json());
 app.use(morgan("dev"));
 app.use(cookiparser());
 
+//rate limiting
+app.use("/api", ratelimiting);
+
+//base routes url
 app.use("/api/app/auth", authRouter);
+app.use("/api/data", dataRouter);
 
 app.get("/", (req, res) => {
   console.log("your api is running on port 8080");
